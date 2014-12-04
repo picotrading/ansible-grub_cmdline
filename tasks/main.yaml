@@ -1,0 +1,36 @@
+---
+
+- name: Get content of the Grub config file for RedHat <= 6
+  shell: cat "{{ grub_cmdline_path1 }}" | perl -ane '/(?=.*{{ grub_cmdline_add_args | join(")(?=.*") }})/ && print "YES"'
+  register: grub_content
+  changed_when: grub_content.stdout | length == 0
+  when: >
+    ansible_os_family == "RedHat" and
+    ansible_distribution_major_version | int <= 6
+
+- name: Update Grub default config for RedHat <= 6
+  shell: grubby --args="{{ item }}" --update-kernel=ALL
+  with_items: grub_cmdline_add_args
+  when: >
+    ansible_os_family == "RedHat" and
+    ansible_distribution_major_version | int <= 6 and
+    grub_cmdline_add_args | length > 0 and
+    grub_content.stdout | length == 0
+
+- name: Remove arguments from Grub default config for RedHat <= 6
+  shell: grubby --remove-args="{{ item }}" --update-kernel=ALL
+  with_items: grub_cmdline_remove_args
+  when: >
+    ansible_os_family == "RedHat" and
+    ansible_distribution_major_version | int <= 6 and
+    grub_cmdline_remove_args | length > 0
+
+- name: Update Grub default config for RedHat >= 7
+  lineinfile:
+    dest: "{{ grub_cmdline_path2 }}"
+    line: GRUB_CMDLINE_LINUX="{{ grub_cmdline_add_args | join(' ') }}"
+    regexp: '^GRUB_CMDLINE_LINUX="'
+  when: >
+    ansible_os_family == "RedHat" and
+    ansible_distribution_major_version | int >= 7
+  notify: Update Grub2 config file

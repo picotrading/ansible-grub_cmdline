@@ -1,0 +1,4 @@
+---
+
+- name: Update Grub2 config file
+  shell: grub2-mkconfig -o /boot/grub2/grub.cfg
