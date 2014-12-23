@@ -1,5 +1,10 @@
 ---
 
+- name: Test distribution
+  assert:
+    that: >
+      ansible_os_family == "RedHat"
+
 - name: Get content of the Grub config file for RedHat <= 6
   shell: cat "{{ grub_cmdline_path1 }}" | perl -ane '/(?=.*{{ grub_cmdline_add_args | join(")(?=.*") }})/ && print "YES"'
   register: grub_content
