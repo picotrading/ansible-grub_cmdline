@@ -5,6 +5,11 @@
     that: >
       ansible_os_family == "RedHat"
 
+- name: Make sure Perl is installed
+  yum:
+    name: perl
+    state: present
+
 - name: Get content of the Grub config file for RedHat <= 6
   shell: cat "{{ grub_cmdline_path1 }}" | perl -ane '/(?=.*{{ grub_cmdline_add_args | join(")(?=.*") }})/ && print "YES"'
   register: grub_content
