@@ -11,10 +11,20 @@ Example
 ---
 
 # Example of how to use the role
-- hosts: myhost
+- hosts: myhost1
   vars:
     grub_cmdline_add_args:
       - biosdevname=0
+      - net.ifnames=0
+  roles:
+    - grub_cmdline
+
+# Example of configuration with more than one argument of the same name
+- hosts: myhost2
+  vars:
+    grub_cmdline_add_args:
+      # Arguments with the same name must be defined as one item
+      - console=tty1 console=ttyS1,115200n8r
       - net.ifnames=0
   roles:
     - grub_cmdline
