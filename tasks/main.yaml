@@ -43,4 +43,5 @@
   when: >
     ansible_os_family == "RedHat" and
     ansible_distribution_major_version | int >= 7
-  notify: Update Grub2 config file
+  notify:
+    - Update Grub2 config file
